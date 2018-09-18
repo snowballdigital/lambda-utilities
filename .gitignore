@@ -1,0 +1,6 @@
+logs
+*.log
+.npm
+.idea
+node_modules
+config/local-*.*
