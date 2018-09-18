@@ -1,3 +1,5 @@
+const sinon = require('sinon')
+
 const lu = require('../index')
 
 describe('crystallize lambda utilities', () => {
@@ -42,6 +44,91 @@ describe('crystallize lambda utilities', () => {
       const normalized = normalize({ headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prop: 'test' }) })
 
       expect(normalized.body).to.deep.equal({ prop: 'test' })
+    })
+  })
+
+  describe('request handler normalization', () => {
+    const thrower = (code, propName = 'statusCode', message = 'Faux error', body) => () => {
+      const e = new Error(message)
+      if (code) {
+        e[propName] = code
+      }
+
+      if (body) {
+        e.body = body
+      }
+
+      throw e
+    }
+
+    it('returns a handler function', () => {
+      const handler = lu.normalizeRequestHandler(sinon.spy(), sinon.spy())
+
+      expect(handler).to.be.a('function')
+    })
+
+    it('calls the handler function with normalized request parameters', async () => {
+      const normalizeParams = sinon.fake.returns({ prop: 'value' })
+      const handler = sinon.spy()
+
+      await lu.normalizeRequestHandler(handler, normalizeParams)()
+
+      sinon.assert.calledOnce(normalizeParams)
+      sinon.assert.calledOnce(handler)
+      sinon.assert.calledWith(handler, { prop: 'value' })
+    })
+
+    it('uses status 204 for undefined handler return values', async () => {
+      const response = await lu.normalizeRequestHandler(sinon.fake.returns(undefined), sinon.spy())()
+
+      expect(response.statusCode).to.equal(204)
+      expect(response.body).to.equal(undefined)
+    })
+
+    it('stringifies handler return value into response body', async () => {
+      const response = await lu.normalizeRequestHandler(sinon.fake.returns({ prop: 'value' }), sinon.spy())()
+
+      expect(response).to.deep.equal({
+        statusCode: 200,
+        body: JSON.stringify({ prop: 'value' })
+      })
+    })
+
+    describe('error handling', () => {
+      const normalize = (fn, normalizeParams = sinon.fake.returns({})) => lu.normalizeRequestHandler(fn, normalizeParams)
+
+      it('returns a well formatted response', async () => {
+        const handle = normalize(thrower(418))
+        const response = await handle()
+
+        expect(response).to.have.all.keys([ 'statusCode', 'body' ])
+      })
+
+      it('uses an error\'s status code', async () => {
+        const r1 = await normalize(thrower(418))()
+        expect(r1.statusCode).to.equal(418)
+
+        const r2 = await normalize(thrower(419, 'status'))()
+        expect(r2.statusCode).to.equal(419)
+
+        const r3 = await normalize(thrower(420, 'code'))()
+        expect(r3.statusCode).to.equal(420)
+
+        const r4 = await normalize(thrower())()
+        expect(r4.statusCode).to.equal(500)
+      })
+
+      it('uses an error\'s body prop for the response body', async () => {
+        const response = await normalize(thrower(418, 'statusCode', 'Faux error', 'Error body'))()
+
+        expect(response.body).to.deep.equal(JSON.stringify({ message: 'Error body' }))
+      })
+
+      it('uses an error\'s message for the response body', async () => {
+        const response = await normalize(thrower())()
+
+        expect(response.body).to.deep.equal(JSON.stringify({ message: 'Faux error' }))
+      })
     })
   })
 })

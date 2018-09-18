@@ -15,12 +15,12 @@ const normalizeRequestParameters = ({ headers, path, pathParameters, httpMethod,
   }
 }
 
-const normalizeRequestHandler = (func) => async (event, context) => {
+const normalizeRequestHandler = (func, normalizeParams = normalizeRequestParameters) => async (event, context) => {
   let statusCode
   let body
 
   try {
-    body = await func(normalizeRequestParameters(event), event, context)
+    body = await func(normalizeParams(event), event, context)
 
     statusCode = typeof body !== 'undefined' ? 200 : 204
   } catch (e) {
@@ -30,7 +30,7 @@ const normalizeRequestHandler = (func) => async (event, context) => {
 
   return {
     statusCode,
-    body: JSON.stringify(body)
+    body: typeof body !== 'undefined' ? JSON.stringify(body) : undefined
   }
 }
 
