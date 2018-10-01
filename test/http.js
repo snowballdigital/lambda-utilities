@@ -188,6 +188,22 @@ describe('crystallize lambda utilities', () => {
           JSON.stringify({ message: 'using "message" prop' })
         )
       })
+
+      it('does not nest an error\'s "message" property', async () => {
+        const throwErr = () => {
+          let e = new Error()
+
+          e.error = { message: 'this is not nested' }
+
+          throw e
+        }
+
+        const response = await normalize(throwErr)()
+
+        expect(response.body).to.deep.equal(
+          JSON.stringify({ message: 'this is not nested' })
+        )
+      })
     })
   })
 })

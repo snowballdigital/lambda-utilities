@@ -39,9 +39,15 @@ const normalizeRequestHandler = (
 
     statusCode = typeof body !== 'undefined' ? 200 : 204
   } catch (e) {
+    const message = e.error || e.body || e.message || 'Internal server error'
+
     statusCode = e.statusCode || e.status || e.code || 500
+    // prevent nesting of "message" prop in inter-api communication
     body = {
-      message: e.error || e.body || e.message || 'Internal server error'
+      message:
+        typeof message === 'object' && message.message
+          ? message.message
+          : message
     }
   }
 
