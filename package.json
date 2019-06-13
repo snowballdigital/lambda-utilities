@@ -24,6 +24,7 @@
     ]
   },
   "devDependencies": {
+    "@tailored-apps/helpers": "^1.1.1",
     "chai": "^4.2.0",
     "husky": "^2.4.1",
     "mocha": "^6.1.4",

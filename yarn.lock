@@ -124,6 +124,11 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
+"@tailored-apps/helpers@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@tailored-apps/helpers/-/helpers-1.1.1.tgz#dc295ac48f71e847e75e77f894245cfa389682bf"
+  integrity sha512-55nfthxWCOiii7GHeAoKRNnd3ASOKRWw13A6/PVLRrEfHMcXE2On9vzu+rg2FCe6V6vVQBMvdq7hXE/7VcIX/Q==
+
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
