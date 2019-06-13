@@ -1,63 +1,35 @@
-const normalizeRequestParameters = ({
-  headers,
-  path,
-  pathParameters,
-  httpMethod,
-  queryStringParameters,
-  body
-}) => {
-  const standardizedHeaders = Object.entries(headers).reduce(
-    (acc, [headerName, value]) => {
-      return { ...acc, [headerName.toLowerCase()]: value }
+const recordProcessor = ({ handleItem, ...dependencies }) => {
+  const {
+    extractBody = {
+      'aws:sns': record => record.Sns.Message,
+      'aws:sqs': record => record.body
     },
-    {}
-  )
-
-  const isJson =
-    standardizedHeaders['content-type'] &&
-    standardizedHeaders['content-type'].toLowerCase() === 'application/json'
-
-  return {
-    headers: standardizedHeaders,
-    query: queryStringParameters || {},
-    path,
-    method: httpMethod,
-    params: pathParameters || {},
-    body: body && isJson ? JSON.parse(body) : body
-  }
-}
-
-const normalizeRequestHandler = (
-  func,
-  normalizeParams = normalizeRequestParameters
-) => async (event, context) => {
-  let statusCode
-  let body
-
-  try {
-    body = await func(normalizeParams(event), event, context)
-
-    statusCode = typeof body !== 'undefined' ? 200 : 204
-  } catch (e) {
-    const message = e.error || e.body || e.message || 'Internal server error'
-
-    statusCode = e.statusCode || e.status || e.code || 500
-    // prevent nesting of "message" prop in inter-api communication
-    body = {
-      message:
-        typeof message === 'object' && message.message
-          ? message.message
-          : message
+    extractId = {
+      'aws:sns': record => record.Sns.MessageId,
+      'aws:sqs': record => record.messageId
     }
-  }
+  } = dependencies
 
-  return {
-    statusCode,
-    body: typeof body !== 'undefined' ? JSON.stringify(body) : undefined
+  return async ({ Records }) => {
+    const response = {}
+
+    for (const { EventSource: eventSource, ...record } of Records) {
+      if (!extractId[eventSource] || !extractBody[eventSource]) {
+        throw new Error(
+          `Lambda record processor not properly configured to handle event source "${eventSource}". Need to provide both an extractId and an extractBody function for this event source.`
+        )
+      }
+
+      const id = extractId[eventSource](record)
+      const body = extractBody[eventSource](record)
+
+      response[id] = await handleItem(body)
+    }
+
+    return response
   }
 }
 
 module.exports = {
-  normalizeRequestParameters,
-  normalizeRequestHandler
+  recordProcessor
 }
