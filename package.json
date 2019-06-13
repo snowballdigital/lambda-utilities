@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "standard",
     "test": "mocha -r chai/register-expect test/*.js",
-    "prepublish": "npm run lint && npm run test"
+    "preversion": "npm run lint && npm run test"
   },
   "husky": {
     "hooks": {
@@ -24,11 +24,11 @@
     ]
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "husky": "^0.14.3",
-    "mocha": "^5.2.0",
+    "chai": "^4.2.0",
+    "husky": "^2.4.1",
+    "mocha": "^6.1.4",
     "prettier-standard": "^8.0.1",
-    "sinon": "^6.3.4",
+    "sinon": "^7.3.2",
     "standard": "^12.0.1"
   }
 }
