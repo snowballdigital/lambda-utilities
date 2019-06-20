@@ -13,7 +13,9 @@ const recordProcessor = ({ handleItem, ...dependencies }) => {
   return async ({ Records }) => {
     const response = {}
 
-    for (const { EventSource: eventSource, ...record } of Records) {
+    for (const record of Records) {
+      const eventSource = record.EventSource || record.eventSource // yeah, thanks AWS, nice consistent naming
+
       if (!extractId[eventSource] || !extractBody[eventSource]) {
         throw new Error(
           `Lambda record processor not properly configured to handle event source "${eventSource}". Need to provide both an extractId and an extractBody function for this event source.`

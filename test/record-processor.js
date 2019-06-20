@@ -34,17 +34,35 @@ describe('record processor', () => {
     sinon.assert.calledTwice(extractId.first)
     sinon.assert.calledTwice(extractBody.first)
 
-    sinon.assert.calledWith(extractId.first.firstCall, { prop: 'record 1' })
-    sinon.assert.calledWith(extractId.first.secondCall, { prop: 'record 3' })
+    sinon.assert.calledWith(extractId.first.firstCall, {
+      EventSource: 'first',
+      prop: 'record 1'
+    })
+    sinon.assert.calledWith(extractId.first.secondCall, {
+      EventSource: 'first',
+      prop: 'record 3'
+    })
 
-    sinon.assert.calledWith(extractBody.first.firstCall, { prop: 'record 1' })
-    sinon.assert.calledWith(extractBody.first.secondCall, { prop: 'record 3' })
+    sinon.assert.calledWith(extractBody.first.firstCall, {
+      EventSource: 'first',
+      prop: 'record 1'
+    })
+    sinon.assert.calledWith(extractBody.first.secondCall, {
+      EventSource: 'first',
+      prop: 'record 3'
+    })
 
     sinon.assert.calledOnce(extractId.second)
     sinon.assert.calledOnce(extractBody.second)
 
-    sinon.assert.calledWith(extractId.second, { prop: 'record 2' })
-    sinon.assert.calledWith(extractBody.second, { prop: 'record 2' })
+    sinon.assert.calledWith(extractId.second, {
+      EventSource: 'second',
+      prop: 'record 2'
+    })
+    sinon.assert.calledWith(extractBody.second, {
+      EventSource: 'second',
+      prop: 'record 2'
+    })
   })
 
   it('throw an error if an event source is not properly configured', async () => {
@@ -63,7 +81,7 @@ describe('record processor', () => {
     await processRecords({
       Records: [
         {
-          EventSource: 'aws:sqs',
+          eventSource: 'aws:sqs',
           messageId: 'first message',
           body: 'first message body'
         },
