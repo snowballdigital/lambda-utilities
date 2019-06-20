@@ -17,6 +17,8 @@ const recordProcessor = ({ handleItem, ...dependencies }) => {
       const eventSource = record.EventSource || record.eventSource // yeah, thanks AWS, nice consistent naming
 
       if (!extractId[eventSource] || !extractBody[eventSource]) {
+        console.error(record)
+
         throw new Error(
           `Lambda record processor not properly configured to handle event source "${eventSource}". Need to provide both an extractId and an extractBody function for this event source.`
         )
