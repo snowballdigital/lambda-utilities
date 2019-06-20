@@ -1,13 +1,17 @@
+const bodyExtractors = () => ({
+  'aws:sns': record => record.Sns.Message,
+  'aws:sqs': record => record.body
+})
+
+const idExtractors = () => ({
+  'aws:sns': record => record.Sns.MessageId,
+  'aws:sqs': record => record.messageId
+})
+
 const recordProcessor = ({ handleItem, ...dependencies }) => {
   const {
-    extractBody = {
-      'aws:sns': record => record.Sns.Message,
-      'aws:sqs': record => record.body
-    },
-    extractId = {
-      'aws:sns': record => record.Sns.MessageId,
-      'aws:sqs': record => record.messageId
-    }
+    extractBody = bodyExtractors(),
+    extractId = idExtractors()
   } = dependencies
 
   return async ({ Records }) => {
@@ -35,5 +39,7 @@ const recordProcessor = ({ handleItem, ...dependencies }) => {
 }
 
 module.exports = {
-  recordProcessor
+  recordProcessor,
+  bodyExtractors,
+  idExtractors
 }
