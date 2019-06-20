@@ -1,6 +1,6 @@
 {
   "name": "@crystallize/lambda-utilities",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Collection of helper and utility functions for AWS lambda",
   "main": "index.js",
   "repository": "git@github.com:snowballdigital/lambda-utilities.git",
