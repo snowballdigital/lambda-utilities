@@ -11,14 +11,15 @@ const idExtractors = () => ({
 const recordProcessor = ({ handleItem, ...dependencies }) => {
   const {
     extractBody = bodyExtractors(),
-    extractId = idExtractors()
+    extractId = idExtractors(),
+    getEventSource = record => record.EventSource || record.eventSource // yeah, thanks AWS, nice consistent naming
   } = dependencies
 
   return async ({ Records }) => {
     const response = {}
 
     for (const record of Records) {
-      const eventSource = record.EventSource || record.eventSource // yeah, thanks AWS, nice consistent naming
+      const eventSource = getEventSource(record)
 
       if (!extractId[eventSource] || !extractBody[eventSource]) {
         console.error(record)
