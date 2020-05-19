@@ -1,0 +1,49 @@
+# --------------------------------------------
+# anchors/fragments used throughout this file
+# --------------------------------------------
+.pull_node_modules_cache: &pull_node_modules_cache
+  cache:
+    key: $NODE_MODULE_CACHE_KEY
+    policy: pull
+    paths:
+    - node_modules/
+
+.exclude_short_lived_branches: &exclude_short_lived_branches
+  # exclude branches containing a slash (e.g. feature branches) or those starting with a number followed by a dash (i.e. issue branches)
+  except:
+  - /.+\/.+/
+  - /^[0-9]+-.*$/
+
+# --------------------------------------------
+# actual fun starts here
+# --------------------------------------------
+image: node:12.16
+
+variables:
+  NODE_MODULE_CACHE_KEY: node_modules_${CI_COMMIT_REF_NAME}
+
+stages:
+- lint
+- publish
+
+run linter:
+  stage: lint
+  script:
+  # Using frozen lockfile here to detect potential issues early in the build chain
+  # Docker containers will use frozen lockfile as well - better to error out here than
+  # at the last build step
+  - yarn --frozen-lockfile
+  - yarn run lint
+  cache:
+    key: $NODE_MODULE_CACHE_KEY
+    policy: pull-push
+    paths:
+    - node_modules/
+
+publish package:
+  stage: publish
+  script:
+    - yarn publish
+  only:
+    - tags
+  <<: *pull_node_modules_cache

@@ -1,6 +1,8 @@
 /* eslint-env mocha */
 
-const lib = require('../index')
+import { expect } from 'chai'
+
+import * as lib from '../src'
 
 describe('new library', () => {
   it('is very useful', () => {

@@ -2,7 +2,7 @@
   "name": "@crystallize/LIBRARY-BOILERPLATE",
   "version": "0.0.0",
   "description": "Boilerplate project for crystallize libraries and npm packages",
-  "main": "index.js",
+  "main": "src/index.ts",
   "repository": "git@gitlab.newnormalgroup.com:crystallize/backend/libraries/GIT-REPO.git",
   "author": "Michael Smesnik <michael@snowball.digital>",
   "license": "MIT",
@@ -10,28 +10,30 @@
     "node": ">= 10.15.0"
   },
   "scripts": {
-    "lint": "standard",
-    "test": "mocha test/*.js",
-    "preversion": "npm run lint && npm run test"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "test": "mocha test/**/*.ts",
+    "build": "rimraf dist/* && tsc",
+    "preversion": "yarn lint && yarn test",
+    "prepublishOnly": "yarn build"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "yarn lint"
     }
   },
-  "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "expect"
-    ]
-  },
   "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
     "chai": "^4.2.0",
-    "husky": "^4.2.3",
-    "mocha": "^6.2.2",
-    "prettier-standard": "^8.0.1",
-    "sinon": "^8.1.1",
-    "standard": "^14.3.1"
+    "eslint": "^7.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "mocha": "^7.1.2",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.2"
   }
 }
