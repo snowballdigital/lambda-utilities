@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "mocha test/**/*.ts",
-    "build": "rimraf dist/* && tsc",
+    "build": "rimraf dist/* && tsc -b tsconfig.build.json",
     "preversion": "yarn lint && yarn test",
     "prepublishOnly": "yarn build"
   },
