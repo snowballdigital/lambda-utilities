@@ -2,7 +2,7 @@
   "name": "@crystallize/LIBRARY-BOILERPLATE",
   "version": "0.0.0",
   "description": "Boilerplate project for crystallize libraries and npm packages",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "git@gitlab.newnormalgroup.com:crystallize/backend/libraries/GIT-REPO.git",
   "author": "Michael Smesnik <michael@snowball.digital>",
