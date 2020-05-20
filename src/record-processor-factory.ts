@@ -1,21 +1,37 @@
-export const bodyExtractors = () => ({
+import {
+  BodyExtractors,
+  IdExtractors,
+  ProcessedRecordsResponse,
+  RecordProcessorFactoryArguments,
+} from './interfaces/record-processor.interface'
+
+export const bodyExtractors = (): BodyExtractors => ({
   'aws:sns': record => record.Sns.Message,
   'aws:sqs': record => record.body,
 })
 
-export const idExtractors = () => ({
+export const idExtractors = (): IdExtractors => ({
   'aws:sns': record => record.Sns.MessageId,
   'aws:sqs': record => record.messageId,
 })
 
-export const recordProcessor = ({ handleItem, ...dependencies }) => {
+export const recordProcessorFactory = <
+  RecordType = any,
+  BodyType = any,
+  ItemResponseType = any
+>({
+  handleItem,
+  ...dependencies
+}: RecordProcessorFactoryArguments<RecordType, BodyType, ItemResponseType>) => {
   const {
     extractBody = bodyExtractors(),
     extractId = idExtractors(),
-    getEventSource = record => record.EventSource || record.eventSource, // yeah, thanks AWS, nice consistent naming
+    getEventSource = (record: any) => record.EventSource || record.eventSource, // yeah, thanks AWS, nice consistent naming
   } = dependencies
 
-  return async ({ Records }) => {
+  return async ({
+    Records,
+  }): Promise<ProcessedRecordsResponse<ItemResponseType>> => {
     const response = {}
 
     for (const record of Records) {

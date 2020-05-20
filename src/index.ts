@@ -1,1 +1,1 @@
-export * from './record-processor'
+export * from './record-processor-factory'

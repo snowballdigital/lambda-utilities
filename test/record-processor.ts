@@ -3,7 +3,7 @@ import * as sinon from 'sinon'
 import { expectAsyncError } from '@tailored-apps/helpers/chai'
 import { expect } from 'chai'
 
-import { recordProcessor } from '../src'
+import { recordProcessorFactory } from '../src'
 
 describe('record processor', () => {
   it('uses EventSource property to extract message id and body', async () => {
@@ -17,7 +17,7 @@ describe('record processor', () => {
       second: sinon.fake.returns('second message'),
     }
 
-    const processRecords = recordProcessor({
+    const processRecords = recordProcessorFactory({
       handleItem: sinon.spy(),
       extractId,
       extractBody,
@@ -66,7 +66,7 @@ describe('record processor', () => {
   })
 
   it('throw an error if an event source is not properly configured', async () => {
-    const processRecords = recordProcessor({ handleItem: sinon.spy() })
+    const processRecords = recordProcessorFactory({ handleItem: sinon.spy() })
 
     await expectAsyncError(
       () => processRecords({ Records: [{ EventSource: 'invalid' }] }),
@@ -76,7 +76,7 @@ describe('record processor', () => {
 
   it('passes the message body to the provided handler function', async () => {
     const handleItem = sinon.spy()
-    const processRecords = recordProcessor({ handleItem })
+    const processRecords = recordProcessorFactory({ handleItem })
 
     await processRecords({
       Records: [
@@ -98,7 +98,7 @@ describe('record processor', () => {
   })
 
   it('returns an object containing the individual responses', async () => {
-    const processRecords = recordProcessor({
+    const processRecords = recordProcessorFactory({
       handleItem: sinon
         .stub()
         .onFirstCall()
