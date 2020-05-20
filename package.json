@@ -1,6 +1,6 @@
 {
   "name": "@crystallize/lambda-utilities",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "Collection of helper and utility functions for AWS lambda",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
