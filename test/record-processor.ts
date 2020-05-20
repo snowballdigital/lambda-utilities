@@ -1,34 +1,34 @@
 /* eslint-env mocha */
+import * as sinon from 'sinon'
+import { expectAsyncError } from '@tailored-apps/helpers/chai'
+import { expect } from 'chai'
 
-const sinon = require('sinon')
-const { expectAsyncError } = require('@tailored-apps/helpers/chai')
-
-const { recordProcessor } = require('../index')
+import { recordProcessor } from '../src'
 
 describe('record processor', () => {
   it('uses EventSource property to extract message id and body', async () => {
     const extractId = {
       first: sinon.fake.returns('first id'),
-      second: sinon.fake.returns('second id')
+      second: sinon.fake.returns('second id'),
     }
 
     const extractBody = {
       first: sinon.fake.returns('first message'),
-      second: sinon.fake.returns('second message')
+      second: sinon.fake.returns('second message'),
     }
 
     const processRecords = recordProcessor({
       handleItem: sinon.spy(),
       extractId,
-      extractBody
+      extractBody,
     })
 
     await processRecords({
       Records: [
         { EventSource: 'first', prop: 'record 1' },
         { EventSource: 'second', prop: 'record 2' },
-        { EventSource: 'first', prop: 'record 3' }
-      ]
+        { EventSource: 'first', prop: 'record 3' },
+      ],
     })
 
     sinon.assert.calledTwice(extractId.first)
@@ -36,20 +36,20 @@ describe('record processor', () => {
 
     sinon.assert.calledWith(extractId.first.firstCall, {
       EventSource: 'first',
-      prop: 'record 1'
+      prop: 'record 1',
     })
     sinon.assert.calledWith(extractId.first.secondCall, {
       EventSource: 'first',
-      prop: 'record 3'
+      prop: 'record 3',
     })
 
     sinon.assert.calledWith(extractBody.first.firstCall, {
       EventSource: 'first',
-      prop: 'record 1'
+      prop: 'record 1',
     })
     sinon.assert.calledWith(extractBody.first.secondCall, {
       EventSource: 'first',
-      prop: 'record 3'
+      prop: 'record 3',
     })
 
     sinon.assert.calledOnce(extractId.second)
@@ -57,11 +57,11 @@ describe('record processor', () => {
 
     sinon.assert.calledWith(extractId.second, {
       EventSource: 'second',
-      prop: 'record 2'
+      prop: 'record 2',
     })
     sinon.assert.calledWith(extractBody.second, {
       EventSource: 'second',
-      prop: 'record 2'
+      prop: 'record 2',
     })
   })
 
@@ -70,7 +70,7 @@ describe('record processor', () => {
 
     await expectAsyncError(
       () => processRecords({ Records: [{ EventSource: 'invalid' }] }),
-      `Lambda record processor not properly configured to handle event source "invalid". Need to provide both an extractId and an extractBody function for this event source.`
+      `Lambda record processor not properly configured to handle event source "invalid". Need to provide both an extractId and an extractBody function for this event source.`,
     )
   })
 
@@ -83,13 +83,13 @@ describe('record processor', () => {
         {
           eventSource: 'aws:sqs',
           messageId: 'first message',
-          body: 'first message body'
+          body: 'first message body',
         },
         {
           EventSource: 'aws:sns',
-          Sns: { MessageId: 'second message', Message: 'second message body' }
-        }
-      ]
+          Sns: { MessageId: 'second message', Message: 'second message body' },
+        },
+      ],
     })
 
     sinon.assert.calledTwice(handleItem)
@@ -104,19 +104,19 @@ describe('record processor', () => {
         .onFirstCall()
         .returns('first response')
         .onSecondCall()
-        .returns('second response')
+        .returns('second response'),
     })
 
     const response = await processRecords({
       Records: [
         { EventSource: 'aws:sqs', messageId: 'first message' },
-        { EventSource: 'aws:sns', Sns: { MessageId: 'second message' } }
-      ]
+        { EventSource: 'aws:sns', Sns: { MessageId: 'second message' } },
+      ],
     })
 
     expect(response).to.deep.equal({
       'first message': 'first response',
-      'second message': 'second response'
+      'second message': 'second response',
     })
   })
 })

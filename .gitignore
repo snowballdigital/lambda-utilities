@@ -1,6 +1,43 @@
+# compiled output
+/dist
+/node_modules
+/bundle
+/bundle.tar.gz
+
+# Logs
 logs
 *.log
-.npm
-.idea
-node_modules
-config/local-*.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+.idea/$CACHE_FILE$
+.idea/workspace.xml
+.idea/watcherTasks.xml
+.idea/dictionaries
+.idea/.name
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+config/local-*

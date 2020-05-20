@@ -1,18 +1,18 @@
-const bodyExtractors = () => ({
+export const bodyExtractors = () => ({
   'aws:sns': record => record.Sns.Message,
-  'aws:sqs': record => record.body
+  'aws:sqs': record => record.body,
 })
 
-const idExtractors = () => ({
+export const idExtractors = () => ({
   'aws:sns': record => record.Sns.MessageId,
-  'aws:sqs': record => record.messageId
+  'aws:sqs': record => record.messageId,
 })
 
-const recordProcessor = ({ handleItem, ...dependencies }) => {
+export const recordProcessor = ({ handleItem, ...dependencies }) => {
   const {
     extractBody = bodyExtractors(),
     extractId = idExtractors(),
-    getEventSource = record => record.EventSource || record.eventSource // yeah, thanks AWS, nice consistent naming
+    getEventSource = record => record.EventSource || record.eventSource, // yeah, thanks AWS, nice consistent naming
   } = dependencies
 
   return async ({ Records }) => {
@@ -25,7 +25,7 @@ const recordProcessor = ({ handleItem, ...dependencies }) => {
         console.error(record)
 
         throw new Error(
-          `Lambda record processor not properly configured to handle event source "${eventSource}". Need to provide both an extractId and an extractBody function for this event source.`
+          `Lambda record processor not properly configured to handle event source "${eventSource}". Need to provide both an extractId and an extractBody function for this event source.`,
         )
       }
 
@@ -37,10 +37,4 @@ const recordProcessor = ({ handleItem, ...dependencies }) => {
 
     return response
   }
-}
-
-module.exports = {
-  recordProcessor,
-  bodyExtractors,
-  idExtractors
 }
