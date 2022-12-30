@@ -30,7 +30,7 @@
     "@tailored-apps/helpers": "^1.1.1",
     "chai": "^4.2.0",
     "husky": "^2.4.1",
-    "mocha": "^6.1.4",
+    "mocha": "^10.2.0",
     "prettier-standard": "^8.0.1",
     "sinon": "^7.3.2",
     "standard": "^12.0.1"
